@@ -20,5 +20,10 @@ class HtmlController {
     fun post(model: Model, @PathVariable num : Int){ // PathVariable url에서 받아오는 데이터를 가져옴
         println("num:\t${num}")
     }
+
+    @GetMapping("/sign")
+    fun htmlForm(model: Model) : String{
+        return "sign"
+    }
 }
 
