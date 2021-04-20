@@ -13,6 +13,7 @@ class HtmlController {
     fun index(model:Model) : String {
 //        return ''
 //        println("index method")
+        model.addAttribute("title","Home")
         return "index" // 메소드가 index라는 것을 인지하면 template 하위에 있는 index.html을 읽어 들어온다.(jsp 불러오는방식과 동일함)
     }
 
@@ -21,9 +22,23 @@ class HtmlController {
         println("num:\t${num}")
     }
 
-    @GetMapping("/sign")
-    fun htmlForm(model: Model) : String{
-        return "sign"
+    @GetMapping("/{formType}")
+    fun htmlForm(model: Model , @PathVariable formType:String) : String{ //리턴타입이 nullable이면 함수의 형도 nullable이 되어야 함(? 추가)
+
+        var response: String  = ""
+        if(formType.equals("sign")){
+            response = "sign"
+        }else if(formType.equals("login")){
+            response = "login"
+        }
+        model.addAttribute("title", response)
+
+        return response
     }
+
+//    @GetMapping("/login")
+//    fun htmllogin(model: Model) : String{
+//        return "login"
+//    }
 }
 
