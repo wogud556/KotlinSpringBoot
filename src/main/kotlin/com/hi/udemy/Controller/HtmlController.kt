@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.security.MessageDigest
 
 @Controller
 class HtmlController {
@@ -19,6 +20,15 @@ class HtmlController {
 //        println("index method")
         model.addAttribute("title","Home")
         return "index" // 메소드가 index라는 것을 인지하면 template 하위에 있는 index.html을 읽어 들어온다.(jsp 불러오는방식과 동일함)
+    }
+
+    //2021-05-16
+    fun crypto(ss:String):String{
+        val shar=MessageDigest.getInstance("SHA-256")
+        val hexa=shar.digest(ss.toByteArray())
+        val crypto_str = hexa.fold("",{str,it-> str + "%02x".format(it)})
+
+        return crypto_str
     }
 
     @GetMapping("/post/{num}") //@GetMapping 일때
@@ -45,11 +55,14 @@ class HtmlController {
                  @RequestParam(value = "id") userId : String,
                  @RequestParam(value = "password") password:String) :String{
         try{
-            val user = repository.save(User(userId, password))
-            println(user.toString())
+            val cryptoPass = crypto(password)
+
+            repository.save(User(userId, cryptoPass))
         }catch (e: Exception){
             e.printStackTrace()
         }
+
+        model.addAttribute("title","sign success")
         return "index"
     }
 
