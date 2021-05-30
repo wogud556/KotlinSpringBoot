@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.security.MessageDigest
+import javax.servlet.http.HttpSession
 
 @Controller
 class HtmlController {
@@ -70,5 +71,35 @@ class HtmlController {
 //    fun htmllogin(model: Model) : String{
 //        return "login"
 //    }
+    @PostMapping("/login")
+    fun postlogin(model: Model,
+                    session:HttpSession,
+                    @RequestParam(value = "id") userId: String,
+                    @RequestParam(value = "password") password:String): String{
+    var pagename =""
+    try{
+            val cryptoPass=crypto(password)
+            val db_user = repository.findByUserId(userId)
+
+            if(db_user != null){
+                val db_pass = db_user.password
+
+                if(cryptoPass.equals(db_pass)){
+                    session.setAttribute("userId",db_user.userId)
+                    model.addAttribute("title","welcome")
+                    model.addAttribute("userId",userId)
+                    pagename =  "welcome"
+                }else{
+                    model.addAttribute("title", "login")
+                    pagename = "login"
+                }
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    return pagename
+}
+
+
 }
 
